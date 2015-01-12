@@ -1,0 +1,1 @@
+Class files generated base on 20141211060354_fill_confirmed_at_for_loan_applications.rb.

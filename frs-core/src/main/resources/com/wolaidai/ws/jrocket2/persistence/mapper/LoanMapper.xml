@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2010-2013 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wolaidai.ws.jrocket2.persistence.mapper.LoanMapper">
+	<cache />
+	
+	<sql id="getAllLoansOfUser">
+		SELECT
+		loans.*,
+		loan_applications.*,
+		<include refid="dueColumns"/>
+		<include refid="dueSettlementColumns"/>
+		FROM loans
+		INNER JOIN loan_applications ON loans.loan_application_id =
+		loan_applications.id
+		LEFT OUTER JOIN dues ON loans.id = dues.loan_id
+		LEFT OUTER JOIN due_settlements on dues.id = due_settlements.due_id
+		WHERE loans.borrower_id = #{param1}
+	</sql>
+	
+	<sql id="dueColumns">
+		dues.id AS dues_id,
+		dues.amount AS dues_amount,
+		dues.created_at AS dues_created_at,
+		dues.due_date AS dues_due_date,
+		dues.due_type AS dues_due_type,
+		dues.index AS dues_index,
+		dues.loan_id AS dues_loan_id,
+	</sql>
+	
+	<sql id="dueSettlementColumns">
+		due_settlements.id AS dues_settlements_id,
+		due_settlements.amount AS dues_settlements_amount,
+		due_settlements.due_id AS dues_settlements_due_id,
+		due_settlements.created_at AS dues_settlements_created_at,
+		due_settlements.account_transaction_id AS dues_settlements_account_transaction_id,
+		due_settlements.updated_at AS dues_settlements_updated_at
+	</sql>
+
+	<select id="getLoanCntByUserWithState" resultType="int">
+		SELECT
+		count(1)
+		FROM loans
+		WHERE
+		loans.borrower_id =
+		#{param1}
+		AND loans.state =
+		#{param2}
+	</select>
+
+	<select id="getLoansByUser" resultMap="loansWithLoanApplicationAndDues">
+		<include refid="getAllLoansOfUser"/>
+	</select>
+	
+	<select id="getLoanByUserAndApplicationId" resultMap="loansWithLoanApplicationAndDues">
+		<include refid="getAllLoansOfUser"/>
+		AND loans.application_id = #{param2}
+	</select>
+	
+	<select id="getLoansByUserAndDate" resultMap="loansWithDues">
+		SELECT
+		loans.*,
+		<include refid="dueColumns"/>
+		<include refid="dueSettlementColumns"/>
+		FROM loans
+		INNER JOIN dues ON loans.id = dues.loan_id
+		<choose>
+			<when test="startDate != null and endDate != null">
+				AND (dues.due_date BETWEEN #{startDate} AND #{endDate})
+			</when>
+			<when test="startDate != null">
+				AND dues.due_date &gt;= #{startDate}
+			</when>
+			<when test="endDate != null">
+				AND dues.due_date &lt;= #{endDate}
+			</when>
+		</choose>
+		LEFT OUTER JOIN due_settlements on dues.id = due_settlements.due_id
+		WHERE loans.borrower_id = #{userId}
+		ORDER BY dues.due_date ASC
+		LIMIT 150
+	</select>
+	
+	<!-- <select id="getDuesByUserAndDate" resultMap="dueWithDueSettlements">
+		SELECT
+		loans.*,
+		<include refid="dueColumns" />
+		<include refid="dueSettlementColumns" />
+		FROM dues
+		INNER JOIN loans ON dues.loan_id = loans.id
+		LEFT OUTER JOIN due_settlements on dues.id = due_settlements.due_id
+		WHERE loans.borrower_id = #{userId}
+		<choose>
+			<when test="startDate != null and endDate != null">
+				AND (dues.due_date BETWEEN #{startDate} AND #{endDate})
+			</when>
+			<when test="startDate != null">
+				AND dues.due_date &gt;= #{startDate}
+			</when>
+			<when test="endDate != null">
+				AND dues.due_date &lt;= #{endDate}
+			</when>
+		</choose>
+		ORDER BY dues.due_date ASC
+		LIMIT 150
+	</select> -->
+	
+	<resultMap type="Loan" id="loansWithLoanApplicationAndDues" autoMapping="true">
+		<id property="id" column="id" javaType="int" />
+		<association property="loanApplication" column="loans.loan_application_id"
+			resultMap="loanApplicationResult" />
+		<collection property="dues" resultMap="dueResult" columnPrefix="dues_" />
+	</resultMap>
+	<resultMap type="Loan" id="loansWithDues" autoMapping="true">
+		<id property="id" column="id" javaType="int" />
+		<collection property="dues" resultMap="dueResult" columnPrefix="dues_" />
+	</resultMap>
+	<!-- <resultMap type="Due" id="dueWithDueSettlements" autoMapping="true">
+		<id property="id" column="dues_id" javaType="int" />
+		<result property="amount" column="dues_amount" />
+		<result property="created_at" column="dues_created_at" />
+		<result property="due_date" column="dues_due_date" />
+		<result property="due_type" column="dues_due_type" />
+		<result property="index" column="dues_index" />
+		<result property="loan_id" column="dues_loan_id" />
+		<association property="loan" column="dues.loan_id" resultMap="loanResult" />
+		<collection property="dueSettlement" resultMap="dueSettlementResult"
+			columnPrefix="dues_settlements_" />
+	</resultMap> -->
+	<resultMap type="LoanApplication" id="loanApplicationResult" autoMapping="true">
+		<id property="id" column="loan_applications.id" javaType="int" />
+	</resultMap>
+	<!-- <resultMap type="Loan" id="loanResult" autoMapping="true">
+		<id property="id" column="loans.id" javaType="int" />
+	</resultMap> -->
+	<resultMap type="Due" id="dueResult" autoMapping="true">
+		<id property="id" column="id" javaType="int" />
+		<collection property="dueSettlement" resultMap="dueSettlementResult"
+			columnPrefix="settlements_" />
+	</resultMap>
+	<resultMap type="DueSettlement" id="dueSettlementResult" autoMapping="true">
+		<id property="id" column="id" javaType="int" />
+	</resultMap>
+</mapper>

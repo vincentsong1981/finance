@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2010-2013 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.wolaidai.ws.jrocket2.persistence.mapper.LoanApplicationMapper">
+	<cache />
+	
+	<insert id="insertLoanApplication" useGeneratedKeys="true" keyProperty="id"
+		parameterType="LoanApplication">
+		INSERT INTO loan_applications (borrower_id, tenor, amount, state, created_at, updated_at, origin, applied_at,
+			handling_fee, interest_rate, management_fee_rate, withdrawal_fee_rate, deposit_fee_rate, picked_up_by_id,
+			reason_code1, reject_code, applied_amount, applied_tenor, fm_score, aip_by_id, approved_at)
+		VALUES (#{borrower_id}, #{tenor}, #{amount}, #{state}, #{created_at}, #{updated_at}, #{origin}, #{applied_at},
+			#{handling_fee}, #{interest_rate}, #{management_fee_rate}, #{withdrawal_fee_rate}, #{deposit_fee_rate}, #{picked_up_by_id},
+			#{reason_code1}, #{reject_code}, #{applied_amount}, #{applied_tenor}, #{fm_score}, #{aip_by_id}, #{approved_at})
+	</insert>
+	
+	<select id="getLoanCountForUser" resultType="int">
+		SELECT count(1)
+		FROM loans
+		WHERE borrower_id = #{userId}
+	</select>
+
+	<select id="getLoanApplicationCntByUserWithState" resultType="int">
+		SELECT
+		count(1)
+		FROM loan_applications
+		WHERE
+		loan_applications.borrower_id =
+		#{param1}
+		AND loan_applications.state =
+		#{param2}
+	</select>
+
+	<select id="getLoanApplicationCntByUserWithStateList"
+		resultType="int">
+		SELECT
+		count(1)
+		FROM loan_applications
+		WHERE
+		loan_applications.borrower_id = #{id}
+		AND loan_applications.state
+		IN
+		<foreach item="item" index="index" collection="state" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getLastLoanApplicationStateByUserOrderByCreatedAt"
+		resultType="String">
+		SELECT
+		state
+		FROM loan_applications
+		WHERE
+		loan_applications.borrower_id = #{value}
+		ORDER BY
+		loan_applications.created_at DESC
+		LIMIT 1
+	</select>
+	
+	<select id="getLoanApplicationListByUserId" parameterType="int" resultType="LoanApplication">
+		SELECT * 
+		FROM loan_applications
+		WHERE
+		borrower_id = #{userId}
+	</select>
+	<select id="getLoanApplicationByUserIdAndApplicationId" resultType="LoanApplication">
+		SELECT * 
+		FROM loan_applications
+		WHERE
+		loan_applications.borrower_id = #{param1}
+		AND
+		loan_applications.application_id = #{param2}
+	</select>
+
+	<select id="getApplyingAmountSumByUser" resultType="BigDecimal">
+		SELECT
+		sum(amount)
+		FROM loan_applications
+		WHERE
+		loan_applications.borrower_id = #{param1}
+		AND loan_applications.state IN ('applied','aip','confirmed')
+	</select>
+
+	<select id="getUnsettledPrincipalSumByUser" resultType="BigDecimal">
+		SELECT
+		sum(dues.amount) - COALESCE(sum(due_settlements.amount), 0)
+		FROM dues
+		INNER JOIN loans ON dues.loan_id = loans.id LEFT OUTER JOIN
+		due_settlements ON dues.id = due_settlements.due_id
+		WHERE
+		loans.borrower_id = #{param1}
+		AND dues.due_type = 'principal'
+	</select>
+
+</mapper>

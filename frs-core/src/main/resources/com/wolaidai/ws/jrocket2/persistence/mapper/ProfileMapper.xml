@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2010-2013 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wolaidai.ws.jrocket2.persistence.mapper.ProfileMapper">
+	<cache />
+
+	<insert id="insertProfile" parameterType="Profile">
+		insert into profiles (
+		name,
+		gender,
+		borrower_id,
+		cnid,
+		created_at,
+		updated_at,
+		verified,
+		position_id,
+		education_level_id
+		) values (
+		#{name},
+		#{gender},
+		#{borrower_id},
+		#{cnid},
+		#{created_at},
+		now(),
+		#{verified},
+		#{position_id},
+		#{education_level_id}
+		)
+	</insert>
+
+	<update id="updateProfile" parameterType="Profile">
+		update profiles set
+		name =#{name},
+		gender =#{gender},
+		borrower_id =#{borrower_id},
+		cnid = #{cnid},
+		created_at = #{created_at},
+		updated_at = now(),
+		verified =#{verified},
+		position_id =#{position_id},
+		education_level_id =#{education_level_id}
+		where
+		id =#{id}
+	</update>
+
+	<select id="getProfileByUser" resultMap="profileWithAddresses">
+		SELECT
+		profiles.id AS
+		profile_id,
+		profiles.name AS name,
+		gender,
+		borrower_id,
+		cnid,
+		profiles.created_at AS created_at,
+		profiles.updated_at AS updated_at,
+		verified,
+		position_id,
+		addresses.province AS addr_province,
+		city AS
+		addr_city,
+		district AS addr_district,
+		street AS addr_street,
+		location AS
+		addr_location
+		FROM
+		profiles LEFT OUTER JOIN addresses
+		ON profiles.id = addresses.addressable_id
+		AND
+		addresses.addressable_type = 'Profile'
+		WHERE profiles.borrower_id = #{value}
+	</select>
+
+	<resultMap type="Profile" id="profileWithAddresses">
+		<constructor>
+			<idArg column="profile_id" javaType="int" />
+		</constructor>
+		<result property="name" column="name" />
+		<result property="gender" column="gender" />
+		<result property="borrower_id" column="borrower_id" />
+		<result property="cnid" column="cnid" />
+		<result property="created_at" column="created_at" />
+		<result property="updated_at" column="updated_at" />
+		<result property="verified" column="verified" />
+		<result property="position_id" column="position_id" />
+		<collection property="addresses" ofType="Addresses">
+			<result property="province" column="addr_province" />
+			<result property="city" column="addr_city" />
+			<result property="district" column="addr_district" />
+			<result property="street" column="addr_street" />
+			<result property="location" column="addr_location" />
+		</collection>
+	</resultMap>
+
+	<select id="getProfileByUserId" resultType="Profile">
+		SELECT *
+		FROM profiles
+		WHERE borrower_id = #{userId}
+	</select>
+</mapper>

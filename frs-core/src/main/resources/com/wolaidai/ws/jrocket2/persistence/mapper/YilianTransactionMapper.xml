@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2010-2013 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.wolaidai.ws.jrocket2.persistence.mapper.YilianTransactionMapper">
+	<cache />
+
+	<select id="getInTransactionCntByBankCard" resultType="int">
+		SELECT
+		count(1)
+		FROM yilian_transactions
+		WHERE bank_card_id = #{value}
+		AND
+		(
+		(trans_state = '0000'
+		AND pay_state = '00A4')
+		OR
+		(trans_state is null
+		AND
+		pay_state is null)
+		)
+	</select>
+
+	<insert id="insertOnVerifyBankCard" parameterType="YilianTransaction">
+		INSERT INTO
+		yilian_transactions
+		(role_id, role_type, code, msg_type, batch_no,
+		user_name, id_no, mobile_no, bank_card_id, bank_id, acc_name, acc_no,
+		acc_province, acc_city, created_at)
+		VALUES
+		(#{role_id}, #{role_type},
+		#{code}, #{msg_type}, #{batch_no}, #{user_name}, #{id_no},
+		#{mobile_no}, #{bank_card_id}, #{bank_id}, #{acc_name}, #{acc_no},
+		#{acc_province}, #{acc_city}, current_timestamp)
+	</insert>
+
+	<insert id="updateOnVerifyBankCard" parameterType="YilianTransaction">
+		UPDATE
+		yilian_transactions
+		SET
+		trans_state = #{trans_state}, pay_state =
+		#{pay_state}, remark = #{remark}, success_date = #{success_date}
+		WHERE id = #{id}
+	</insert>
+
+</mapper>
