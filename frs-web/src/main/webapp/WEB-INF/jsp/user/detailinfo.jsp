@@ -9,9 +9,9 @@
 <body>
  	账户的详细信息：<br>
 		<tr>
-			<td>名字是：${userForm.username}</td><br>
-			<td>密码是：${userForm.password}</td><br>
-			<td>状态：${message}</td><br>
+			<td>名字：${user.name}</td><br>
+			<td>手机：${user.mobile}</td><br>
+			<td>邮件：${user.email}</td><br>
 		</tr>
  </body>
 </html>

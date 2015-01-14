@@ -10,15 +10,23 @@
 <body>
 创建用户
 	<div>
-		<form:form method="post" modelAttribute="userForm">
+		<form:form method="post" modelAttribute="user">
 			<table>
 				<tr>
 					<td>用户名：</td>
-					<td><form:input path="username"/><form:errors path="username"></form:errors></td>
+					<td><form:input path="name"/><form:errors path="name"></form:errors></td>
 				</tr>
 				<tr>
 					<td>密码：</td>
-					<td><form:password path="password" /><form:errors path="password"></form:errors></td>
+					<td><form:password path="encryptedpassword" /><form:errors path="encryptedpassword"></form:errors></td>
+				</tr>
+				<tr>
+					<td>邮件：</td>
+					<td><form:input path="email" /><form:errors path="email"></form:errors></td>
+				</tr>
+				<tr>
+					<td>手机：</td>
+					<td><form:input path="mobile" /><form:errors path="mobile"></form:errors></td>
 				</tr>
 				<tr>
 					<td colspan="2"><input type="submit" value="创建" /></td>

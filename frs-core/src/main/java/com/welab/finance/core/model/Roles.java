@@ -1,6 +1,6 @@
 package com.welab.finance.core.model;
 
-// Generated Jan 12, 2015 2:33:03 PM by Hibernate Tools 3.4.0.CR1
+// Generated Jan 13, 2015 5:05:42 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 
@@ -12,8 +12,8 @@ public class Roles implements java.io.Serializable
 
 	private int id;
 	private String role;
-	private Date createdAt;
-	private Date updatedAt;
+	private Date createdat;
+	private Date updatedat;
 	private String description;
 
 	public Roles()
@@ -24,12 +24,12 @@ public class Roles implements java.io.Serializable
 		this.id = id;
 	}
 
-	public Roles(int id, String role, Date createdAt, Date updatedAt, String description)
+	public Roles(int id, String role, Date createdat, Date updatedat, String description)
 	{
 		this.id = id;
 		this.role = role;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
+		this.createdat = createdat;
+		this.updatedat = updatedat;
 		this.description = description;
 	}
 
@@ -53,24 +53,24 @@ public class Roles implements java.io.Serializable
 		this.role = role;
 	}
 
-	public Date getCreatedAt()
+	public Date getCreatedat()
 	{
-		return this.createdAt;
+		return this.createdat;
 	}
 
-	public void setCreatedAt(Date createdAt)
+	public void setCreatedat(Date createdat)
 	{
-		this.createdAt = createdAt;
+		this.createdat = createdat;
 	}
 
-	public Date getUpdatedAt()
+	public Date getUpdatedat()
 	{
-		return this.updatedAt;
+		return this.updatedat;
 	}
 
-	public void setUpdatedAt(Date updatedAt)
+	public void setUpdatedat(Date updatedat)
 	{
-		this.updatedAt = updatedAt;
+		this.updatedat = updatedat;
 	}
 
 	public String getDescription()

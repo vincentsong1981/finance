@@ -18,13 +18,13 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>4.0.8.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>4.0.8.RELEASE</version>
 		</dependency>
 
 		<dependency>
@@ -42,9 +42,15 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>frs-service</artifactId>
+			<version>1.0.0</version>
+		</dependency> -->
+		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>frs-core</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 	</dependencies>

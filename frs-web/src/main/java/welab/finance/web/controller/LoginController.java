@@ -1,25 +1,32 @@
 package welab.finance.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import welab.finance.web.domain.DataSource;
+import welab.finance.web.constant.FrsConstant;
 import welab.finance.web.exception.WebException;
+import welab.finance.web.retriever.UserRetriever;
 
 @Controller
 public class LoginController
 {
+	@Autowired
+	public UserRetriever userRetriever;
 
-	@RequestMapping({"/"})
-	public String login(Model model)
+	@RequestMapping({"/", "/login"})
+	public String login(Model model, HttpSession session)
 	{
+		String name = (String) session.getAttribute(FrsConstant.LOGIN_USER);
+		if (name != null && !name.isEmpty())
+		{
+			return "redirect:index";
+		}
 		return "login";
 	}
 
@@ -39,7 +46,7 @@ public class LoginController
 			throw new WebException("用户名或者密码为空");
 		}
 		
-		session.setAttribute("loginUser", DataSource.getUser(username));		
+		session.setAttribute(FrsConstant.LOGIN_USER, username);		
 		return "redirect:index";
 	}
 	
@@ -49,29 +56,24 @@ public class LoginController
 		return "index";
 	}
 	
+	@RequestMapping(value="/logout")
+	public String logOut(HttpSession session)
+	{
+		String name = (String) session.getAttribute(FrsConstant.LOGIN_USER);
+		if ( name !=null && !name.isEmpty())
+		{
+			session.removeAttribute(FrsConstant.LOGIN_USER);
+		}
+		
+		return "redirect:login";
+	}
+	
 	
 //	@ExceptionHandler({WebException.class})
 //	public String handleException(WebException we, HttpServletRequest hsr)
 //	{
 //		hsr.setAttribute("e", we);
 //		return "error";
-//	}
-
-	/**
-	 * This method is not that fast to implement, but HttpServlet request and response are very
-	 * useful to debug the HTTP request in future.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param command
-	 * @return
-	 */
-//	@RequestMapping(value = "/forward")
-//	public ModelAndView login(HttpServletRequest request, HttpServletResponse response, UserForm command)
-//	{
-//		String username = command.getUsername();
-//		ModelAndView mv = new ModelAndView("/login", "command", "LOGIN SUCCESS, " + username);
-//		return mv;
 //	}
 
 }

@@ -6,11 +6,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Insert title here</title>
+<title>Finance System Report</title>
 </head>
 <body>
-	 Login Success! Welcome ${username }
-	<br>
+	 Login Success! Welcome ${username }<br>
 	<a href="user/list">用户管理</a>
+	<a href="logout">退出登录</a>
 </body>
 </html>

@@ -4,20 +4,26 @@
  */
 package com.welab.finance.core.model.mapper;
 
-import java.util.Date;
+import java.util.List;
 
-import com.welab.finance.core.model.Users;
+import com.welab.finance.core.model.User;
+
 
 /**
  * @author <a href="mailto:vincent@wolaidai.com">spacewen</a>
  */
 public interface FinanceUserMapper
 {
-//	void insertUser(String name, String roleId, String email, String encryptedPassword, Date createdAt,
-//			Date updateDateAt, int signInCount, Date currentSignInAt, String currentSignInIp, boolean locked,
-//			int failedAttempts, Date lockedAt);
 	
-	void insertUser(Users user);
+	void insertUser(User user);
 
-
+	public List<User> getAllUsers();
+	
+	public User getUserById(Integer id);
+	
+	public void updateUserById(User user);
+	
+	public void removeUserById(Integer id);
+	
+	
 }

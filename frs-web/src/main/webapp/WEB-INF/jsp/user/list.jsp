@@ -9,20 +9,15 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<br>
-	<a href="add">添加用户</a>
-	<br>
+	<a href="add">添加用户</a><br>
 	<table>
 		<c:forEach items="${users}" var="user">
 			<tr>
-				<td><a href="${user.value.username}">${user.value.username}</a>
-				</td>
-				<td>${user.value.password}</td>
-				<td><a href="${user.value.username}/update">修改</a></td>
-				<td><a href="${user.value.username}/delete">删除</a></td>
-
+				<td><a href="${user.id}">${user.name}</a></td>
+				<td>${user.email}</td>
+				<td><a href="${user.id}/update">修改</a></td>
+				<td><a href="${user.id}/delete">删除</a></td>
 			</tr>
-			<br>
 		</c:forEach>
 	</table>
 </body>

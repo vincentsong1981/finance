@@ -6,7 +6,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.wolaidai.ws.jrocket2.service.BankService;
 
-public class Test
+public class IgnoreMeTest
 {
 
 	
